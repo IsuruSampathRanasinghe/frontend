@@ -3,11 +3,12 @@ import { useEffect, useState } from "react";
 import { CiCirclePlus } from "react-icons/ci";
 import { FaRegEdit } from "react-icons/fa";
 import { FaRegTrashCan } from "react-icons/fa6";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 export default function AdminProductPage(){
     
-    const [products, setProducts] = useState([])
+    const [products, setProducts] = useState([]);
+    const navigate = useNavigate();
 
     useEffect(()=>{
         axios
@@ -40,6 +41,7 @@ export default function AdminProductPage(){
                             <th className="py-3 px-4">Product Name</th>
                             <th className="py-3 px-4">Price</th>
                             <th className="py-3 px-4">Labelled Price</th>
+                            <th className="py-3 px-4">Stock</th>
                             <th className="py-3 px-4">Category</th>
                             <th className="py-3 px-4">Actions</th>
                         </tr>
@@ -69,6 +71,9 @@ export default function AdminProductPage(){
                                 <td className="py-3 px-4 line-through text-gray-500">
                                     ${item.labelledPrice}
                                 </td>
+                                <td className="py-3 px-4 text-gray-500">
+                                    {item.stock}
+                                </td>
                                 <td className="py-3 px-4">{item.category}</td>
                                 <td className="py-3 px-4">
                                     <div className="flex flex-row gap-4 justify-center items-center">
@@ -76,7 +81,12 @@ export default function AdminProductPage(){
                                             <FaRegTrashCan className="text-red-500 hover:text-red-700 text-lg"/>
                                         </button>
                                         <button className="p-2 rounded-full hover:bg-accent/20 transition">
-                                            <FaRegEdit className="text-accent hover:text-orange-700 text-lg"/>
+                                            <FaRegEdit className="text-accent hover:text-orange-700 text-lg" 
+                                            onClick={()=>{
+                                                navigate("/admin/update-product",{
+                                                    state : item
+                                                })
+                                            }}/>
                                         </button>
                                     </div>
                                 </td>
