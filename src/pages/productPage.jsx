@@ -38,48 +38,8 @@ export function ProductPage(){
                             )
                         })
                     }
-                    {
-                        products.map((item)=>{
-                            return(
-                                <ProductCard key={item.productID} product={item}/>
-                            )
-                        })
-                    }
-                    {
-                        products.map((item)=>{
-                            return(
-                                <ProductCard key={item.productID} product={item}/>
-                            )
-                        })
-                    }
-                    {
-                        products.map((item)=>{
-                            return(
-                                <ProductCard key={item.productID} product={item}/>
-                            )
-                        })
-                    }
-                    {
-                        products.map((item)=>{
-                            return(
-                                <ProductCard key={item.productID} product={item}/>
-                            )
-                        })
-                    }
-                    {
-                        products.map((item)=>{
-                            return(
-                                <ProductCard key={item.productID} product={item}/>
-                            )
-                        })
-                    }
-                    {
-                        products.map((item)=>{
-                            return(
-                                <ProductCard key={item.productID} product={item}/>
-                            )
-                        })
-                    }
+                    
+
                 </div>
             }
         </div>
