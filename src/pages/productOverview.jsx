@@ -1,9 +1,10 @@
 import axios from "axios"
 import { useEffect, useState } from "react"
 import toast from "react-hot-toast"
-import { useParams } from "react-router-dom"
+import { Link, useParams } from "react-router-dom"
 import { Loader } from "../compnents/loader"
 import ImageSlider from "../compnents/imageSlider"
+import { addToCart, loadCart } from "../utils/cart"
 
 export default function ProductOverview(){
 
@@ -64,8 +65,20 @@ export default function ProductOverview(){
                             )
                         }
                         <div className="w-full h-[40px] flex gap-4 mt-[60px]">
-                            <button className="w-[50%] h-full bg-accent/100 text-white font-semibold hover:bg-accent/70">Add to cart</button>
-                            <button className="w-[50%] h-full border border-accent text-accent font-semibold hover:bg-accent hover:text-white">Buy now</button>
+                            <button className="w-[50%] h-full bg-accent/100 text-white font-semibold hover:bg-accent/70"
+                            onClick={()=>{
+                                addToCart(product,1)
+                                toast.success("Added to cart")
+                            }}>Add to cart</button>
+                            <Link to="/checkout" state={[{
+                                image : product.images[0],
+                                productID : product.productID,
+                                name : product.name,
+                                price : product.price,
+                                labelledPrice : product.labelledPrice,
+                                quentity : 1
+                            }]} className="w-[50%] text-center h-full border pt-1.5 border-accent text-accent font-semibold hover:bg-accent hover:text-white"
+                            >Buy now</Link>
                         </div>
                     </div>
                 </div>)

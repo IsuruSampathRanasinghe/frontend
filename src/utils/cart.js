@@ -33,7 +33,7 @@ export function addToCart(product, quantity){
             price: product.price,
             labelledPrice: product.labelledPrice,
             quantity: quantity,
-            image: product.image[0]
+            image: product.images[0]
         }
         cart.push(cartItem)
 
@@ -54,4 +54,16 @@ export function addToCart(product, quantity){
         }
     }
     localStorage.setItem("cart", JSON.stringify(cart))
+}
+
+export function getTotal(){
+    const cart = loadCart()
+    let total = 0
+
+    cart.forEach(
+        (item) => {
+            total += item.price * item.quantity
+        }
+    )
+    return total
 }
