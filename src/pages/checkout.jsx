@@ -3,11 +3,14 @@ import { BiTrash } from "react-icons/bi";
 import { CiCircleChevUp } from "react-icons/ci";
 import { CiCircleChevDown } from "react-icons/ci";
 import { useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
+import axios from "axios";
 
 export default function CheckoutPage(){
 
-    const location = useLocation()
+    const location = useLocation();
+    const navigate = useNavigate();
 
     const [cart, setCart] = useState(location.state)
 
@@ -15,10 +18,56 @@ export default function CheckoutPage(){
         let total = 0;
         cart.forEach(
             (item)=>{
-                total += item.price * item.quentity
+                total += item.price * item.quantity
             }
         )
         return total
+    }
+
+    function getTotalQuantity() {
+        return cart.reduce((sum, item) => sum + item.quantity, 0);
+    }
+
+    async function purchaseCart(){
+        const token = localStorage.getItem("token");
+        if(token == null){
+            toast.error("Please login to place an order");
+            navigate("/login");
+            return;
+        }
+        try{
+            const items = []
+            for(let i=0 ; i<cart.length ; i++){
+                console.log("Order payload:", {
+                    address : "No 123, Main Street, City",
+                    items : items
+                });
+                items.push(
+                    {
+                        productID: cart[i].productID,
+                        quantity: cart[i].quantity
+                    }
+                )
+            }
+            const response = await axios.post(import.meta.env.VITE_API_URL + "/api/orders",{
+                address : "No 123, Main Street, City",
+                items : items
+            },{
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            })
+
+            toast.success("Order placed successfully");
+
+        }catch(error){
+            toast.error("Failed to place order");
+            console.error(error);
+
+            if(error.response && error.response.status == 400){
+                toast.error(error.response.data.message)
+            }
+        }
     }
 
     return(
@@ -43,17 +92,17 @@ export default function CheckoutPage(){
                                         ()=>{
                                             const newCart = [...cart]
 
-                                            newCart[index].quentity += 1
+                                            newCart[index].quantity += 1
                                             setCart(newCart)
                                         }
                                     } />
-                                    <span className="font-semibold text-4xl">{item.quentity}</span>
+                                    <span className="font-semibold text-4xl">{item.quantity}</span>
                                     <CiCircleChevDown className="text-3xl" onClick={
                                         ()=>{
                                             const newCart = [...cart]
 
-                                            if(newCart[index].quentity > 1){
-                                                newCart[index].quentity -= 1
+                                            if(newCart[index].quantity > 1){
+                                                newCart[index].quantity -= 1
                                             }
                                             setCart(newCart)
                         
@@ -62,7 +111,7 @@ export default function CheckoutPage(){
                                 </div>
                                 <div className="w-[180px] h-full flex flex-col">
                                     {
-                                        item.labelledPrice > item.price &&
+                                        item .labelledPrice > item.price &&
                                         <span className="text-secondary w-full text-right line-through text-lg pr-[10px] mt-[20px] ">LKR {item.labelledPrice.toFixed(2)}</span>
                                     }
                                     <span className="font-semibold text-accent w-full text-right text-2xl pr-[10px] mt-[5px]">LKR {item.price.toFixed(2)}</span>
@@ -72,8 +121,12 @@ export default function CheckoutPage(){
                     })
                 }
                 <div className="w-full h-[120px] bg-white flex justify-end items-center relative">
-                    <button to="/checkout" className="absolute left-0 bg-accent text-white px-6 py-3 ml-[20px] hover:bg-accent/80 ">Order</button>
+                    <button to="/checkout" onClick={purchaseCart} className="absolute left-0 bg-accent text-white px-6 py-3 ml-[20px] hover:bg-accent/80 ">Order</button>
+                    
                     <div className="h-[50px]">
+                        <span className="font-semibold text-secondary w-full text-right text-lg pr-[10px]">
+                            Items: {getTotalQuantity()}
+                        </span>
                         <span className="font-semibold text-accent w-full text-right text-2xl pr-[10px] mt-[5px]">Total: LKR{getTotal().toFixed(2)}</span>
                     </div>
                 </div>

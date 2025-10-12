@@ -76,7 +76,7 @@ export default function ProductOverview(){
                                 name : product.name,
                                 price : product.price,
                                 labelledPrice : product.labelledPrice,
-                                quentity : 1
+                                quantity : 1
                             }]} className="w-[50%] text-center h-full border pt-1.5 border-accent text-accent font-semibold hover:bg-accent hover:text-white"
                             >Buy now</Link>
                         </div>
