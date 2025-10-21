@@ -1,136 +1,178 @@
 import { BiTrash } from "react-icons/bi";
-
-import { CiCircleChevUp } from "react-icons/ci";
-import { CiCircleChevDown } from "react-icons/ci";
+import { CiCircleChevUp, CiCircleChevDown } from "react-icons/ci";
 import { useState } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import axios from "axios";
 
-export default function CheckoutPage(){
+export default function CheckoutPage() {
 
     const location = useLocation();
     const navigate = useNavigate();
+    const [cart, setCart] = useState(location.state);
+    const [address, setAddress] = useState("");
+    const [name, setName] = useState("");
 
-    const [cart, setCart] = useState(location.state)
-
-    function getTotal(){
+    function getTotal() {
         let total = 0;
-        cart.forEach(
-            (item)=>{
-                total += item.price * item.quantity
-            }
-        )
-        return total
+        cart.forEach(item => {
+            total += item.price * item.quantity;
+        });
+        return total;
     }
 
     function getTotalQuantity() {
         return cart.reduce((sum, item) => sum + item.quantity, 0);
     }
 
-    async function purchaseCart(){
+    async function purchaseCart() {
         const token = localStorage.getItem("token");
-        if(token == null){
+        if (token == null) {
             toast.error("Please login to place an order");
             navigate("/login");
             return;
         }
-        try{
-            const items = []
-            for(let i=0 ; i<cart.length ; i++){
-                console.log("Order payload:", {
-                    address : "No 123, Main Street, City",
-                    items : items
+        try {
+            const items = [];
+            for (let i = 0; i < cart.length; i++) {
+                items.push({
+                    productID: cart[i].productID,
+                    quantity: cart[i].quantity
                 });
-                items.push(
-                    {
-                        productID: cart[i].productID,
-                        quantity: cart[i].quantity
-                    }
-                )
             }
-            const response = await axios.post(import.meta.env.VITE_API_URL + "/api/orders",{
-                address : "No 123, Main Street, City",
-                items : items
-            },{
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            })
+            /*
+            console.log("Order payload:", {
+                address: address,
+                name : name==""?null:name,
+                items: items
+            });
+            */
+            await axios.post(import.meta.env.VITE_API_URL + "/api/orders", {
+                address: address,
+                customerName: name==""?null:name,
+                items: items
+            }, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
 
             toast.success("Order placed successfully");
-
-        }catch(error){
+        } catch (error) {
             toast.error("Failed to place order");
             console.error(error);
 
-            if(error.response && error.response.status == 400){
-                toast.error(error.response.data.message)
+            if (error.response && error.response.status === 400) {
+                toast.error(error.response.data.message);
             }
         }
     }
 
-    return(
-        <div className="w-full h-[calc(100vh-100px)] bg-primary flex flex-col pt-[25px]  items-center">
-            <div className="w-[600px] flex flex-col gap-4">
-                {
-                    cart.map((item, index) => {
-                        return (
-                            <div key={index} className="w-full h-[120px] bg-white flex relative items-center">
-                                <button className="absolute text-red-500 right-[-50px] text-2xl rounded-full aspect-square hover:bg-red-500 hover:text-white p-[5px] font-bold" onClick={
-                                    ()=>{
-                                        
-                                    }
-                                }><BiTrash /></button>
-                                <img className="h-full aspect-square object-cover" src={item.image} />
-                                <div className="w-[200px] h-full flex flex-col pl-[15px] pt-[5px]">
-                                    <h1 className="font-semibold text-lg w-full text-wrap">{item.name}</h1>
-                                    <span className="text-sm text-secondary">{item.productID}</span>
-                                </div>
-                                <div className="w-[100px] h-full flex flex-col justify-center items-center">
-                                    <CiCircleChevUp className="text-3xl" onClick={
-                                        ()=>{
-                                            const newCart = [...cart]
+    return (
+        <div className="w-full lg:h-[calc(100vh-100px)] overflow-y-scroll bg-primary flex flex-col pt-[25px] items-center">
+            <div className="w-[400px] lg:w-[600px] flex flex-col gap-4">
+                {cart.map((item, index) => (
+                    <div
+                        key={index}
+                        className="w-full h-[300px] lg:h-[120px] bg-white flex flex-col lg:flex-row relative items-center p-3 lg:p-0"
+                    >
+                        <button
+                            className="absolute text-red-500 right-[-50px] text-2xl rounded-full aspect-square hover:bg-red-500 hover:text-white p-[5px] font-bold"
+                            onClick={() => { }}
+                        >
+                            <BiTrash />
+                        </button>
 
-                                            newCart[index].quantity += 1
-                                            setCart(newCart)
-                                        }
-                                    } />
-                                    <span className="font-semibold text-4xl">{item.quantity}</span>
-                                    <CiCircleChevDown className="text-3xl" onClick={
-                                        ()=>{
-                                            const newCart = [...cart]
+                        <img
+                            className="h-[100px] lg:h-full aspect-square object-cover"
+                            src={item.image}
+                        />
 
-                                            if(newCart[index].quantity > 1){
-                                                newCart[index].quantity -= 1
-                                            }
-                                            setCart(newCart)
-                        
-                                        }
-                                    } />
-                                </div>
-                                <div className="w-[180px] h-full flex flex-col">
-                                    {
-                                        item .labelledPrice > item.price &&
-                                        <span className="text-secondary w-full text-right line-through text-lg pr-[10px] mt-[20px] ">LKR {item.labelledPrice.toFixed(2)}</span>
+                        <div className="w-full text-center lg:w-[200px] h-[100px] lg:h-full flex flex-col pl-[15px] pt-[5px]">
+                            <h1 className="font-semibold text-lg w-full text-wrap">{item.name}</h1>
+                            <span className="text-sm text-secondary">{item.productID}</span>
+                        </div>
+
+                        <div className="w-[100px] h-full flex flex-row lg:flex-col justify-center items-center">
+                            <CiCircleChevUp
+                                className="text-3xl cursor-pointer"
+                                onClick={() => {
+                                    const newCart = [...cart];
+                                    newCart[index].quantity += 1;
+                                    setCart(newCart);
+                                }}
+                            />
+                            <span className="font-semibold text-4xl">{item.quantity}</span>
+                            <CiCircleChevDown
+                                className="text-3xl cursor-pointer"
+                                onClick={() => {
+                                    const newCart = [...cart];
+                                    if (newCart[index].quantity > 1) {
+                                        newCart[index].quantity -= 1;
                                     }
-                                    <span className="font-semibold text-accent w-full text-right text-2xl pr-[10px] mt-[5px]">LKR {item.price.toFixed(2)}</span>
-                                </div>
-                            </div>
-                        );
-                    })
-                }
-                <div className="w-full h-[120px] bg-white flex justify-end items-center relative">
-                    <button to="/checkout" onClick={purchaseCart} className="absolute left-0 bg-accent text-white px-6 py-3 ml-[20px] hover:bg-accent/80 ">Order</button>
+                                    setCart(newCart);
+                                }}
+                            />
+                        </div>
+
+                        <div className="w-full lg:w-[180px] h-[200px] lg:h-full items-center justify-center flex flex-row lg:flex-col">
+                            {item.labelledPrice > item.price && (
+                                <span className="text-secondary lg:w-full text-center lg:text-right line-through text-lg pr-[10px] lg:mt-[20px]">
+                                    LKR {item.labelledPrice.toFixed(2)}
+                                </span>
+                            )}
+                            <span className="font-semibold text-accent lg:w-full text-center lg:text-right text-2xl pr-[10px] lg:mt-[5px]">
+                                LKR {item.price.toFixed(2)}
+                            </span>
+                        </div>
+                    </div>
+                ))}
+
+                <div className="w-full lg:w-full bg-white flex flex-col items-center relative">
+                    <div className="w-full h-full flex justify-between items-center p-4">
+                        <label htmlFor="name"
+                            className="text-sm text-secondary mr-2">
+                                Name
+                        </label>
+                        <input type="text"
+                            id="name"
+                            value={name}
+                            onChange={(e) => setName(e.target.value)}
+                            className="w-[400px] h-[50px] border border-secondary rounded-md px-3"    
+                        />
+                    </div>
                     
-                    <div className="h-[50px]">
-                        <span className="font-semibold text-secondary w-full text-right text-lg pr-[10px]">
+                    <div className="w-full h-full flex justify-between items-center p-4">
+                        <label htmlFor="address"
+                            className="text-sm text-secondary mr-2">
+                                Shipping Address
+                        </label>
+                        <textarea type="text"
+                            id="address"
+                            value={address}
+                            onChange={(e) => setAddress(e.target.value)}
+                            className="w-[400px] h-[50px] border border-secondary rounded-md px-3"    
+                        />
+                    </div>
+                </div>
+
+                {/* Order Summary & Button */}
+                <div className="w-[400px] lg:w-full h-[120px] bg-white flex flex-col-reverse lg:flex-row justify-end items-center relative">
+                    <button
+                        onClick={purchaseCart}
+                        className="lg:absolute left-0 bg-accent text-center text-white px-6 py-3 lg:ml-[20px] hover:bg-accent/80"
+                    >
+                        Order
+                    </button>
+
+                    <div className="h-[50px] flex flex-col items-center lg:items-end justify-center">
+                        <span className="font-semibold text-secondary text-lg lg:pr-[10px]">
                             Items: {getTotalQuantity()}
                         </span>
-                        <span className="font-semibold text-accent w-full text-right text-2xl pr-[10px] mt-[5px]">Total: LKR{getTotal().toFixed(2)}</span>
+                        <span className="font-semibold text-accent text-2xl lg:pr-[10px] mt-[5px]">
+                            Total: LKR{getTotal().toFixed(2)}
+                        </span>
                     </div>
                 </div>
             </div>
         </div>
-    )
+    );
 }
