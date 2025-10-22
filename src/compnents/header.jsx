@@ -1,9 +1,13 @@
 import { Link } from "react-router-dom"
 import { BsCart3 } from "react-icons/bs";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { MdMenu } from "react-icons/md";
+import axios from "axios";
+import UserData from "./userData";
 
 export default function Header(){
+
+    
 
     const [isSideBarOpen, setIsSideBarOpen] = useState(false)
 
@@ -45,6 +49,9 @@ export default function Header(){
                             <a href="/cart" className="p-4 border-b border-secondary/10">
                                 Cart
                             </a>
+                            <div className="lg:hidden flex w-[300px] absolute bottom-[20px] justify-center items-center gap-4">
+                                <UserData/>
+                            </div>
                         </div>
                     </div>
                 }
@@ -54,6 +61,9 @@ export default function Header(){
                     <Link to="/products">Products</Link>
                     <Link to="/about">About</Link>
                     <Link to="/contact">Contact</Link>
+                </div>
+                <div className="h-full hidden lg:flex w-[200px] absolute right-[100px] top-0 justify-center items-center gap-4">
+                    <UserData/>
                 </div>
                 <Link to="/cart" className="h-full absolute right-0 hidden text-3xl lg:flex justify-center items-center">
                     <BsCart3 />
