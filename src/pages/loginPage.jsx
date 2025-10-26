@@ -91,12 +91,12 @@ export default function LoginPage() {
               placeholder="Enter your password"
               className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-accent text-secondary placeholder-gray-500"
             />
-            <a
-              href="/forgot-password"
+            <Link
+              to="/forget-password"
               className="text-sm text-accent hover:underline self-end"
             >
               Forgot Password?
-            </a>
+            </Link>
           </div>
 
           <button
