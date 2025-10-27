@@ -1,10 +1,12 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
+import { Navigate, useNavigate } from "react-router-dom";
 
 export default function UserData() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isLogoutConfirmOpen, setIsLogoutConfirmOpen] = useState(false)
+  const navigate = useNavigate();
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -81,13 +83,15 @@ export default function UserData() {
                 (e)=>{
                     if(e.target.value == "logout"){
                         setIsLogoutConfirmOpen(true);
+                    }else if(e.target.value == "settings"){
+                      navigate("/settings");
                     }
                 }
             }
             className="ml-4 bg-accent text-white text-sm px-3 py-1 rounded-full focus:outline-none hover:bg-[#e8741f] transition-all cursor-pointer"
           >
             <option hidden>⋯</option>
-            <option>Account Setting</option>
+            <option value={"settings"}>Account Setting</option>
             <option>Orders</option>
             <option value={"logout"}>Logout</option>
           </select>
